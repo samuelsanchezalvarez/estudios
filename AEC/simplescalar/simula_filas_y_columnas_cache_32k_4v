@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Recorrido por filas"
+./sim-outorder -decode:width 1 -issue:width 1 -issue:inorder true -commit:width 1 -cache:il1 il1:256:32:4:l -cache:dl1 dl1:256:32:4:l -cache:il2 none -cache:dl2 none recorrido_por_filas 2>&1 | awk '/sim_CPI/ {print}; /sim_num_insn/ {print}; /sim_cycle/ {print}'
+echo "Recorrido por columnas"
+./sim-outorder -decode:width 1 -issue:width 1 -issue:inorder true -commit:width 1 -cache:il1 il1:256:32:4:l -cache:dl1 dl1:256:32:4:l -cache:il2 none -cache:dl2 none recorrido_por_columnas 2>&1 | awk '/sim_CPI/ {print}; /sim_num_insn/ {print}; /sim_cycle/ {print}'

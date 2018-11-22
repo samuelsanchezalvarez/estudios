@@ -1,0 +1,62 @@
+:Base  DLXide.HLP>:Base  DLXide.HLP
+:Title Simulador DLX
+1 El simulador DLXide=Contenido
+1 La ventana de carga
+2 Utilizando los menus
+3 Menu Archivos
+4 Menu Abrir=Topic7
+4 Menu Nuevo=Topic8
+4 Menu Guardar=Topic10
+4 Menu Guardar como=Topic11
+4 Menu Salir=Topic12
+3 Menu Edición
+4 Menu Copiar=Topic13
+4 Menu Cortar=Topic14
+4 Menu Pegar=Topic15
+4 Menu Deshacer=Topic16
+4 Menu Seleccionar todo=Topic17
+3 Menu Simulador
+4 Menu Ensamblar=Topic18
+4 Menu Ejecutar=Topic19
+4 Menu Configurar=Topic20
+1 Un vistazo a la ventana de carga=Topic28
+1 La ventana de simulación
+2 Como simular un programa
+3 Ensamblar un fichero=Topic2
+3 Configurar la máquina DLX=Topic3
+3 La ventana de ejecución=Topic4
+3 Terminando=Topic5
+1 Un vistazo a la ventana de simulación=Topic29
+1 Ejecución ciclo a ciclo=Topic36
+1 Ejecución sin interrrupción=Topic37
+1 El diagrama de ejecución=Topic30
+1 La ruta de datos=Topic33
+1 Los registros enteros=Topic31
+1 El PC indexado=Topic34
+1 Tomar imágenes de la simulación=Topic35
+1 Configuración de la máquina=Topic39
+1 Estadísticas de ejecución=Topic32
+1 El ensamblador DLX
+2 Instrucciones
+3 Carga y almacenamiento=Topic24
+3 Aritméticas=Topic25
+3 Salto=Topic26
+2 Errores al ensamblar
+3 Falta el operando %i de la instrucción=Topic40
+3 Tipo del operando %i incorrecto se esperaba un %s=Topic41
+3 Etiqueta inexistente en memoria de programa=Topic42
+3 Etiqueta inexistente en memoria de datos=Topic43
+3 Dirección inalcanzable con un salto relativo=Topic44
+3 Dirección inalcanzable en el salto a subrutina=Topic45
+3 No he podido clasificar el simbolo %s=Topic46
+3 Coma no encontrada despues del operando %i=Topic47
+3 Encontrado código incorrecto despúes de la instrucción=Topic48
+3 Error en la introducción de valores en memoria=Topic49
+3 Error al introducir la dirección=Topic50
+3 Error al indicar los bytes a reservar=Topic51
+3  Etiqueta de código duplicada=Topic52
+3  Etiqueta de datos duplicada=Topic53
+3 No puedo abrir el fichero ensamblador=Topic54
+3 Error al leer línea %i=Topic55
+3 Instrucción errónea=Topic56
+1 Las directivas=Topic6

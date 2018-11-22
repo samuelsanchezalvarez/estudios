@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# El script recibe como parametro de entrada ($1) una cadena que añadir a los ficheros 
+# de salida (*.out) que se generarán en el directorio spec2000/OUTS
+
+
+cd spec2000
+echo "--- Comienzo de la simulación..."
+
+CONFIG_A="-decode:width 1 -issue:width 1 -issue:inorder true -commit:width 1 -cache:il1 il1:256:32:1:l -cache:dl1 dl1:256:32:1:l -cache:il2 none -cache:dl2 none"
+
+../sim-outorder -max:inst 10000000 $CONFIG_A -redir:sim OUTS/bzip2-$1.out bzip2.ss input.source 1
+
+../sim-outorder -max:inst 15000000 $CONFIG_A -redir:sim OUTS/mcf-$1.out mcf.ss inp.in
+
+../sim-outorder -max:inst 12000000 $CONFIG_A -redir:sim OUTS/vpr-$1.out vpr.ss net.in arch.in place.in route.out -nodisp -route_only -route_chan_width 15
+
+../sim-outorder -max:inst 11000000 $CONFIG_A -redir:sim OUTS/equake-$1.out equake.ss < equake.in
+
+../sim-outorder -max:inst 18000000 $CONFIG_A -redir:sim OUTS/ammp-$1.out ammp.ss < ammp.in
+
+clear
+echo "NI       Ciclos   CPI"
+
+for f in $(ls OUTS/*.out)
+do
+  awk '/sim_CPI/ {print $2}; /sim_num_insn/ {print $2}; /sim_cycle/ {print $2}' $f | pr -ts" " --columns 3
+done 
+
+cd ..

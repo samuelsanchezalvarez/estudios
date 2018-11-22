@@ -1,0 +1,380 @@
+1)
+
+a) 
+[root@localhost ~]# vi /etc/skel/saludo.txt
+
+b) 
+[root@localhost ~]# vi /etc/skel/.bash_profile 
+
+c) 
+[root@localhost ~]# groupadd estudiantes
+[root@localhost ~]# groupadd becarios
+
+d)
+[root@localhost ~]# groupadd estudiantes
+[root@localhost ~]# groupadd becarios
+[root@localhost ~]# useradd pepe -g estudiantes -G becarios
+[root@localhost ~]# useradd paco -g estudiantes -G becarios
+[root@localhost ~]# passwd pepe
+Cambiando la contraseña del usuario pepe.
+Nueva contraseña: 
+CONTRASEÑA INCORRECTA: La contraseña tiene menos de 8 caracteres
+Vuelva a escribir la nueva contraseña: 
+Vuelva a escribir la nueva contraseña: 
+passwd: todos los tokens de autenticación se actualizaron exitosamente.
+[root@localhost ~]# passwd paco
+Cambiando la contraseña del usuario paco.
+Nueva contraseña: 
+CONTRASEÑA INCORRECTA: La contraseña tiene menos de 8 caracteres
+Vuelva a escribir la nueva contraseña: 
+passwd: todos los tokens de autenticación se actualizaron exitosamente.
+[root@localhost ~]# id paco
+uid=1002(paco) gid=1001(estudiantes) grupos=1001(estudiantes),1002(becarios)
+[root@localhost ~]# id pepe
+uid=1001(pepe) gid=1001(estudiantes) grupos=1001(estudiantes),1002(becarios)
+[root@localhost ~]# 
+
+e) [root@localhost ~]# chage -E 2017-12-31 paco
+
+f) [root@localhost ~]# chage -M 9 -W 6 pepe
+
+2)
+
+a)
+dd if=/dev/zero of=/root/disco.img bs=200M count=1
+1+0 registros leídos
+1+0 registros escritos
+209715200 bytes (210 MB, 200 MiB) copied, 0,172001 s, 1,2 GB/s
+[root@localhost ~]# losetup -P /dev/loop1 /root/disco.img 
+[root@localhost ~]# 
+[root@localhost ~]# fdisk -l
+...
+Disco /dev/loop1: 200 MiB, 209715200 bytes, 409600 sectores
+Unidades: sectores de 1 * 512 = 512 bytes
+Tamaño de sector (lógico/físico): 512 bytes / 512 bytes
+Tamaño de E/S (mínimo/óptimo): 512 bytes / 512 bytes
+
+b)
+
+fdisk /dev/loop1 
+
+Bienvenido a fdisk (util-linux 2.28.2).
+Los cambios solo permanecerán en la memoria, hasta que decida escribirlos.
+Tenga cuidado antes de utilizar la orden de escritura.
+
+El dispositivo no contiene una tabla de particiones reconocida.
+Se ha creado una nueva etiqueta de disco DOS con el identificador de disco 0xf57e63bd.
+
+Orden (m para obtener ayuda): n
+Tipo de partición
+   p   primaria (0 primaria(s), 0 extendida(s), 4 libre(s))
+   e   extendida (contenedor para particiones lógicas)
+Seleccionar (valor predeterminado p): p
+Número de partición (1-4, valor predeterminado 1): 
+Primer sector (2048-409599, valor predeterminado 2048): 
+Último sector, +sectores o +tamaño{K,M,G,T,P} (2048-409599, valor predeterminado 409599): +50M
+
+Crea una nueva partición 1 de tipo 'Linux' y de tamaño 50 MiB.
+
+Orden (m para obtener ayuda): n
+Tipo de partición
+   p   primaria (1 primaria(s), 0 extendida(s), 3 libre(s))
+   e   extendida (contenedor para particiones lógicas)
+Seleccionar (valor predeterminado p): e
+Número de partición (2-4, valor predeterminado 2): 
+Primer sector (104448-409599, valor predeterminado 104448): 
+Último sector, +sectores o +tamaño{K,M,G,T,P} (104448-409599, valor predeterminado 409599): 
+
+Crea una nueva partición 2 de tipo 'Extended' y de tamaño 149 MiB.
+
+Orden (m para obtener ayuda): w
+Se ha modificado la tabla de particiones.
+Llamando a ioctl() para volver a leer la tabla de particiones.
+Se están sincronizando los discos.
+
+c)
+[root@localhost ~]# fdisk -l /dev/loop1
+Disco /dev/loop1: 200 MiB, 209715200 bytes, 409600 sectores
+Unidades: sectores de 1 * 512 = 512 bytes
+Tamaño de sector (lógico/físico): 512 bytes / 512 bytes
+Tamaño de E/S (mínimo/óptimo): 512 bytes / 512 bytes
+Tipo de etiqueta de disco: dos
+Identificador del disco: 0xf57e63bd
+
+Disposit.    Inicio Comienzo  Final Sectores Tamaño Id Tipo
+/dev/loop1p1            2048 104447   102400    50M 83 Linux
+/dev/loop1p2          104448 409599   305152   149M  5 Extendida
+
+e)
+[root@localhost ~]# mkfs.ext4 /dev/loop1p1
+mke2fs 1.42.13 (17-May-2015)
+Descartando los bloques del dispositivo: hecho                           
+Se está creando un sistema de ficheros con 51200 bloques de 1k y 12824 nodos-i
+UUID del sistema de ficheros: afa7352d-91c6-443f-95f6-c8aa57197b52
+Respaldo del superbloque guardado en los bloques: 
+	8193, 24577, 40961
+
+Reservando las tablas de grupo: hecho                           
+Escribiendo las tablas de nodos-i: hecho                           
+Creando el fichero de transacciones (4096 bloques): hecho
+Escribiendo superbloques y la información contable del sistema de ficheros: hecho
+
+f)
+
+[root@localhost ~] blkid
+/dev/sda1: UUID="92adbe3c-835a-4fe5-ac2f-64440f7e7c4c" TYPE="ext4" PARTUUID="04d609e3-01"
+/dev/sda2: UUID="ZFzBz5-TDww-oX7T-DqDQ-Fnek-6J4X-lAFnI4" TYPE="LVM2_member" PARTUUID="04d609e3-02"
+/dev/mapper/fedora-root: UUID="e1a49415-2994-40fe-9b9d-f2e1990b438b" TYPE="ext4"
+/dev/mapper/fedora-swap: UUID="75a1169b-a349-460e-8f1d-b7849c239fa5" TYPE="swap"
+/dev/loop1: PTUUID="f57e63bd" PTTYPE="dos"
+/dev/loop1p1: UUID="afa7352d-91c6-443f-95f6-c8aa57197b52" TYPE="ext4" PARTUUID="f57e63bd-01"
+
+[root@localhost ~]# vi /etc/fstab 
+
+UUID=afa7352d-91c6-443f-95f6-c8aa57197b52  /miparticion    ext4   usrquota,noauto,rw,users 1 1
+[root@localhost ~]# mount /dev/loop1p1 /miparticion
+
+g)
+
+[root@localhost ~]# mount -o remount /miparticion/
+[root@localhost ~]# quotacheck -nm /miparticion
+[root@localhost ~]# quotaon -a
+
+h)
+[root@localhost ~]# edquota pepe
+Disk quotas for user pepe (uid 1001):
+  Filesystem                   blocks       soft       hard     inodes     soft     hard
+  /dev/loop1p1                      0          0          0          0        2        5
+
+
+i)
+[root@localhost ~]# chmod 777 /miparticion
+[pepe@localhost ~]$ touch /miparticion/fichero
+[pepe@localhost ~]$ touch /miparticion/fichero1
+[pepe@localhost ~]$ touch /miparticion/fichero2
+[pepe@localhost ~]$ touch /miparticion/fichero3
+[pepe@localhost ~]$ touch /miparticion/fichero4
+[pepe@localhost ~]$ touch /miparticion/fichero5
+touch: no se puede efectuar `touch' sobre '/miparticion/fichero5': Disk quota exceeded
+
+j)
+[root@localhost ~]# umount /miparticion 
+[pepe@localhost ~]$ touch /miparticion/fichero6
+touch: no se puede efectuar `touch' sobre '/miparticion/fichero6': Permission denied
+
+Sólo tenemos permiso cuando hay un sistema de ficheros montado. Al estar desmontado no podemos acceder a el
+
+
+
+4)
+a)
+[root@localhost ~]# rpm -qf /bin/nc
+nmap-ncat-7.40-1.fc24.x86_64
+
+b)
+[root@localhost ~]# free
+              total        used        free      shared  buff/cache   available
+Mem:        4045300      960440     2503192       24948      581668     2790504
+Swap:       1048572           0     1048572
+
+
+c)
+[root@localhost ~]# ps aux | tr -s " " | cut -d " " -f1,5,6 | sort -k 2,3 | tail -n 6 | head -n 5 | cut -f 1 -d "
+alumno
+root
+alumno
+root
+alumno
+
+d)
+vi /bin/topcarga.sh
+#!/bin/bash -u
+ps aux | tr -s " " | cut -d " " -f1,5,6 | sort -k 2,3 | tail -n 6 | head -n 5 | cut -f 1 -d " > /root/top5carga.sh
+
+e)
+[root@localhost ~]# crontab -e
+no crontab for root - using an empty one
+crontab: installing new crontab
+05 * * * * /bin/top5carga.sh
+
+5)
+a) 
+[root@localhost ~]# mkdir /root/datos
+[root@localhost ~]# find /root | cpio -ovF /root/copia_completa_datos.cpio
+/root
+/root/ExamenISO
+/root/.cache
+/root/.cshrc
+/root/.bashrc
+/root/disco.img
+/root/.bash_logout
+/root/.xauthZGBlB8
+/root/.tcshrc
+/root/.local
+/root/.local/share
+/root/.local/share/ibus-typing-booster
+/root/.local/share/ibus-typing-booster/data
+/root/datos
+/root/.viminfo
+/root/.bash_profile
+/root/.gnupg
+/root/.gnupg/private-keys-v1.d
+/root/.gnupg/pubring.kbx~
+/root/.gnupg/trustdb.gpg
+/root/.gnupg/pubring.kbx
+/root/.gnupg/dirmngr.conf
+/root/.gnupg/gpg.conf
+/root/.bash_history
+/root/.pki
+/root/.pki/nssdb
+/root/anaconda-ks.cfg
+409631 bloques
+[root@localhost ~]# cpio -t < copia_completa_datos.cpio 
+/root
+/root/ExamenISO
+/root/.cache
+/root/.cshrc
+/root/.bashrc
+/root/disco.img
+/root/.bash_logout
+/root/.xauthZGBlB8
+/root/.tcshrc
+/root/.local
+/root/.local/share
+/root/.local/share/ibus-typing-booster
+/root/.local/share/ibus-typing-booster/data
+/root/datos
+/root/.viminfo
+/root/.bash_profile
+/root/.gnupg
+/root/.gnupg/private-keys-v1.d
+/root/.gnupg/pubring.kbx~
+/root/.gnupg/trustdb.gpg
+/root/.gnupg/pubring.kbx
+/root/.gnupg/dirmngr.conf
+/root/.gnupg/gpg.conf
+/root/.bash_history
+/root/.pki
+/root/.pki/nssdb
+/root/anaconda-ks.cfg
+409631 bloques
+
+b)
+[root@localhost ~]# cd datos/
+[root@localhost datos]# mkdir d1
+[root@localhost datos]# mkdir d2
+[root@localhost datos]# touch d1/f11
+[root@localhost datos]# touch d2/d21
+[root@localhost datos]# vi d1/f11
+[root@localhost datos]# vi d2/f21
+[root@localhost datos]# find /root -newer d1/f11 | cpio -ovF /root/copia_incremental_01__datos.cpio/root
+/root/copia_incremental_01__datos.cpio
+/root/datos/d1
+/root/datos/d2
+/root/datos/d2/f21
+1 bloque
+[root@localhost datos]# cd ..
+[root@localhost ~]# cpio -t < copia_incremental_01__datos.cpio 
+/root
+/root/copia_incremental_01__datos.cpio
+/root/datos/d1
+/root/datos/d2
+/root/datos/d2/f21
+1 bloque
+
+
+
+c)
+[root@localhost datos]# find /root -newer d3/f31 | cpio -ovF /root/copia_incremental_02__datos.cpio
+/root
+/root/datos/d3
+/root/copia_incremental_02__datos.cpio
+1 bloque
+[root@localhost datos]# cpio -t < ../copia_incremental_02__datos.cpio 
+/root
+/root/datos/d3
+/root/copia_incremental_02__datos.cpio
+1 bloque
+
+d)
+[root@localhost ~]# rm -r datos
+[root@localhost copia_datos]# cpio -i -F /root/copia_
+copia_completa_datos.cpio         copia_incremental_01__datos.cpio
+copia_datos/                      copia_incremental_02__datos.cpio
+[root@localhost copia_datos]# cpio -i -F /root/copia_completa_datos.cpio 
+cpio: /root/.cshrc no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.bashrc no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/disco.img no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.bash_logout no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.xauthZGBlB8 no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.tcshrc no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.viminfo no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.bash_profile no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.gnupg/pubring.kbx~ no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.gnupg/trustdb.gpg no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.gnupg/pubring.kbx no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.gnupg/dirmngr.conf no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.gnupg/gpg.conf no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/.bash_history no se ha creado: existe una versión con fecha igual o posterior
+cpio: /root/anaconda-ks.cfg no se ha creado: existe una versión con fecha igual o posterior
+409631 bloques
+[root@localhost copia_datos]# cpio -i -F /root/copia_incremental_01__datos.cpio 
+cpio: /root/copia_incremental_01__datos.cpio no se ha creado: existe una versión con fecha igual o posterior
+1 bloque
+[root@localhost copia_datos]# cpio -i -F /root/copia_incremental_02__datos.cpio 
+cpio: /root/copia_incremental_02__datos.cpio no se ha creado: existe una versión con fecha igual o posterior
+1 bloque
+[root@localhost copia_datos]# ls /root/
+anaconda-ks.cfg            copia_incremental_01__datos.cpio  disco.img
+copia_completa_datos.cpio  copia_incremental_02__datos.cpio  ExamenISO
+copia_datos                datos
+[root@localhost copia_datos]# ls /root/datos/
+d1  d2  d3
+
+6)
+[root@localhost ~]# fdisk /dev/sdb
+
+Bienvenido a fdisk (util-linux 2.28.2).
+Los cambios solo permanecerán en la memoria, hasta que decida escribirlos.
+Tenga cuidado antes de utilizar la orden de escritura.
+
+El dispositivo no contiene una tabla de particiones reconocida.
+Se ha creado una nueva etiqueta de disco DOS con el identificador de disco 0xaeefb673.
+
+Orden (m para obtener ayuda): g
+Se ha creado una nueva etiqueta de disco GPT (GUID: 11861A5C-AC90-49A0-B6B5-A4B71D5AFA86).
+
+Orden (m para obtener ayuda): n
+Número de partición (1-128, valor predeterminado 1): 
+Primer sector (2048-2097118, valor predeterminado 2048): 
+Último sector, +sectores o +tamaño{K,M,G,T,P} (2048-2097118, valor predeterminado 2097118): +100M
+
+Crea una nueva partición 1 de tipo 'Linux filesystem' y de tamaño 100 MiB.
+
+Orden (m para obtener ayuda): n
+Número de partición (2-128, valor predeterminado 2): 
+Primer sector (206848-2097118, valor predeterminado 206848): 
+Último sector, +sectores o +tamaño{K,M,G,T,P} (206848-2097118, valor predeterminado 2097118): +100M
+
+Crea una nueva partición 2 de tipo 'Linux filesystem' y de tamaño 100 MiB.
+
+Orden (m para obtener ayuda): w
+Se ha modificado la tabla de particiones.
+Llamando a ioctl() para volver a leer la tabla de particiones.
+Se están sincronizando los discos.
+
+Y así para /dev/sdc y /dev/sdd
+
+b)
+[root@localhost ~]# mdadm --create /dev/md0 --level=0 --raid-devices=3 /dev/sdb1 /dev/sdc1 /dev/sdc2
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md0 started.
+[root@localhost ~]# cat /proc/mdstat
+Personalities : [raid0] 
+md0 : active raid0 sdc2[2] sdc1[1] sdb1[0]
+      304128 blocks super 1.2 512k chunks
+      
+unused devices: <none>
+
+
+

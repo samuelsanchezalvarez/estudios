@@ -1,0 +1,8 @@
+ADD R4, R4, #196
+Loop:     
+ADD     R4,R2,R3     
+SUB R1,R2,R1 
+SUBI R2,R2,#4 
+SW 0(R1),R1 
+SUB R4,R3,R2 
+BNEZ R4,Loop 
