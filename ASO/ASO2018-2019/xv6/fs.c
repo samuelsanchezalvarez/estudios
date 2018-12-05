@@ -400,16 +400,16 @@ bmap(struct inode *ip, uint bn)
   if(bn < NINDIRECT*NINDIRECT){
 	if((addr = ip->addrs[NDIRECT+1]) == 0)
       		ip->addrs[NDIRECT+1] = addr = balloc(ip->dev);
+	uint direct_block=bn%NINDIRECT;
 	bn/=NINDIRECT;
     bp= bread(ip->dev,addr);
 	a= (uint*)bp->data;
 	if((addr = a[bn]) == 0)
 		 a[bn] = addr = balloc(ip->dev);
 	bp=bread(ip->dev, addr);
-	bn= bn % NINDIRECT;
 	a=(uint*) bp->data;
-	if((addr=a[bn])==0){
-		a[bn]=addr=balloc(ip->dev);
+	if((addr=a[direct_block])==0){
+		a[direct_block]=addr=balloc(ip->dev);
 		log_write(bp);
 	}
 	
