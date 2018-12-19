@@ -65,6 +65,7 @@ sys_dup(void)
   filedup(f);
   return fd;
 }
+//Llamada al sistema para implementar dup2
 int
 sys_dup2(void)
 { 
@@ -82,10 +83,10 @@ sys_dup2(void)
   //Comprobamos si son iguales
   if(fd==fd2)
 	  return fd2;
-  if ((f2=proc->ofile[fd2])!=0)
+  if ((f2=proc->ofile[fd2])!=0) //Si el descriptor está abierto, hay que cerrarlo
 	  fileclose(proc->ofile[fd2]);
-  proc->ofile[fd2]=f1;
-  filedup(f1);
+  proc->ofile[fd2]=f1; //Indicamos que el descriptor nuevo apunta al viejo
+  filedup(f1); //Hacemos la llamada dup
   return fd2; 
 }
 

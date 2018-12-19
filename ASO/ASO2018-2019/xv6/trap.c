@@ -79,8 +79,8 @@ trap(struct trapframe *tf)
     lapiceoi();
     break;
   case T_PGFLT:
-    if(myproc() == 0 || ((tf->cs&3) == 0 && rcr2()>=myproc()->sz)){
-      // In kernel, it must be our mistake.
+    if(myproc() == 0 || ((tf->cs&3) == 0 && rcr2()>=myproc()->sz)){ //Si pedimos una pagina en modo kernel es una peticion correcta
+      // In kernel, it is not a mistake.
       cprintf("unexpected page fault from  from cpu %d eip %x (cr2=0x%x)\n",
                cpuid(), tf->eip, rcr2());
       panic("page fault");

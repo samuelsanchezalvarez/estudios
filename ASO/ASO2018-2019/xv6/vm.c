@@ -68,7 +68,7 @@ mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm)
   for(;;){
     if((pte = walkpgdir(pgdir, a, 1)) == 0)
       return -1;
-    if(*pte & PTE_P)
+    if(*pte & PTE_P) //Si hay fork o exit/wait y se sale fuera del proceso lo consideramos como una situación normal
       return 0;
     *pte = pa | perm | PTE_P;
     if(a == last)
@@ -325,8 +325,8 @@ copyuvm(pde_t *pgdir, uint sz)
   for(i = 0; i < sz; i += PGSIZE){
     if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
       panic("copyuvm: pte should exist");
-    if(!(*pte & PTE_P))
-      panic("copyuvm: page not present");
+    if(!(*pte & PTE_P)) 
+      return 0; //Si se hace fork o exit/wait y se sale fuera en lugar de panic es una situación normal
     pa = PTE_ADDR(*pte);
     flags = PTE_FLAGS(*pte);
     if((mem = kalloc()) == 0)

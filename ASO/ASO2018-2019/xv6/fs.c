@@ -396,32 +396,30 @@ bmap(struct inode *ip, uint bn)
     brelse(bp);
     return addr;
   }
+  //Está en el BDI, asi que lo añadimos
   bn-=NINDIRECT;
   if(bn < NINDIRECT*NINDIRECT){
-	if((addr = ip->addrs[NDIRECT+1]) == 0)
+	if((addr = ip->addrs[NDIRECT+1]) == 0) 
       		ip->addrs[NDIRECT+1] = addr = balloc(ip->dev);
-	uint direct_block=bn%NINDIRECT;
-	bn/=NINDIRECT;
-    bp= bread(ip->dev,addr);
-	a= (uint*)bp->data;
-	if((addr = a[bn]) == 0)
-		 a[bn] = addr = balloc(ip->dev);
-	bp=bread(ip->dev, addr);
-	a=(uint*) bp->data;
-	if((addr=a[direct_block])==0){
+	uint direct_block=bn%NINDIRECT; //Posicion del bloque directo del BSI del BDI
+	bn/=NINDIRECT; //Posicion del bloque BSI del BDI
+	bp=bread(ip->dev,addr); //Leemos el BDI
+	a=(uint*)bp->data;
+	if((addr=a[bn])==0){ 
+		a[bn]=addr=balloc(ip->dev);
+		log_write(bp);
+	}
+	brelse(bp);
+	bp=bread(ip->dev,addr); //Leemos el BSI
+	a=(uint*)bp->data;
+	if((addr=a[direct_block])==0){ //Leemos el bloque directo del BDI
 		a[direct_block]=addr=balloc(ip->dev);
 		log_write(bp);
 	}
-	
-	
 	brelse(bp);
 	return addr;
+	
   }
-
-
-
- 
-
   
 
   panic("bmap: out of range");
@@ -435,7 +433,7 @@ bmap(struct inode *ip, uint bn)
 static void
 itrunc(struct inode *ip)
 {
-  int i, j;
+  int i, j,k,l;
   struct buf *bp;
   uint *a;
 
@@ -457,7 +455,29 @@ itrunc(struct inode *ip)
     bfree(ip->dev, ip->addrs[NDIRECT]);
     ip->addrs[NDIRECT] = 0;
   }
+  if(ip->addrs[NDIRECT+1]){
+  	bp=bread(ip->dev,ip->addrs[NDIRECT+1]); //Leemos el BDI
+	a=(uint*) bp->data;
+	for(k=0; k < NINDIRECT;k++){ //Recorremos el BDI
+		if(a[k]){ //Si la posicion k no está vacía (hay bloque) recorremos el BSI de esa posicion 
+			struct buf *auxiliar=bread(ip->dev,a[k]); //Leemos el BSI
+			uint* b=(uint*)auxiliar->data;
+			for(l=0;l<NINDIRECT;l++){ //Recorremos el BSI
+				if(b[l]) //Si esa posicion no esta vacia, liberamos directamente
+					bfree(ip->dev,b[l]);
+			}
+			brelse(auxiliar); //Liberamos el bloque
+			bfree(ip->dev,a[k]); //Liberamos el BSI
+		}
 
+	}
+	//Liberamos el BDI y terminamos
+	brelse(bp);
+	bfree(ip->dev, ip->addrs[NDIRECT+1]);
+    	ip->addrs[NDIRECT+1] = 0;
+
+
+  }
   ip->size = 0;
   iupdate(ip);
 }

@@ -48,19 +48,17 @@ sys_sbrk(void)
   int addr;
   int n;
 
-  if(argint(0, &n) < 0)
+  if(argint(0, &n) < 0) //Comprobamos si se nos pasan un argumento de tipo entero
     return -1;
   addr=myproc()->sz;
-  if(n<0){
+  if(n<0){ //Si es negativo llamamos a growproc
 	if(growproc(n) < 0)
 		return -1;
 	return addr;
   }
-  if(addr+n >= KERNBASE)
+  if(addr+n >= KERNBASE) //Si nos pasamos y ocupamos el mapa del kernel es un error
 	return -1;
-  myproc()->sz+=n;
-  // if(growproc(n) < 0)
-  //   return -1;
+  myproc()->sz+=n; //Aumentamos el tamaño del proceso
   return addr;
   	
 
@@ -100,13 +98,14 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+//Llamada al sistema para mostrar la fecha
 int
 sys_date(void)
 {
   struct rtcdate *r;
-  if (argptr(0,(char**)&r,sizeof(struct rtcdate))<0)
+  if (argptr(0,(char**)&r,sizeof(struct rtcdate))<0) 
 	  return -1;
   //Cogemos de la pila de usuario
-  cmostime(r);
+  cmostime(r); //Mostramos la fecha
   return 0;
 }
